@@ -4,7 +4,7 @@ import math
 import time
 
 def scale(y):
-  y = 600/(y + 301)
+  y = 1-(y + 300)/600
   return y
   
 screen = turtle.Screen()
@@ -15,7 +15,33 @@ screen.tracer(0)
 t = turtle.Turtle()
 t.hideturtle()
 
+CENTER = 0
+SIZE = 40
 
-print(scale(-300))  
+class Box:
+  def __init__(self,x,y):
+    self.x = x
+    self.y = y
+    
+  def getBase(self):
+    self.p1 = [(self.x*SIZE)*scale(self.y), self.y*SIZE]
+    self.p2 = [(self.x*SIZE+SIZE)*scale(self.y), self.y*SIZE]
+    self.p3 = [(self.x*SIZE)*scale(self.y+SIZE), self.y*SIZE+SIZE]
+    self.p4 = [(self.x*SIZE+SIZE)*scale(self.y+SIZE), self.y*SIZE+SIZE]
+
+    
+  def draw(self):
+    self.getBase()
+    t.penup()
+    t.goto(self.p1)
+    t.pendown()
+    t.color("white")
+    t.goto(self.p2)
+    t.goto(self.p4)
+    t.goto(self.p3)
+
+      
+b1 = Box(0,0)
+b1.draw()
 
 turtle.done()

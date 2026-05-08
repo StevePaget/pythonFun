@@ -1,0 +1,21 @@
+import turtle
+import random
+import math
+import time
+
+def scale(y):
+  y = 600/(y + 301)
+  return y
+  
+screen = turtle.Screen()
+screen.setup(600, 600)
+screen.bgcolor("black")
+screen.tracer(0)
+
+t = turtle.Turtle()
+t.hideturtle()
+
+
+print(scale(-300))  
+
+turtle.done()

@@ -62,10 +62,11 @@ class Box:
         t.penup(); t.goto(p1[0], p1[1]+YHORIZON)
         t.pendown(); t.goto(p2[0], p2[1]+YHORIZON)
 
-boxes = []
-for y in range(0,81,2):
-  for x in range(-40,41,2):
-    boxes.append(Box([[x,y,0],[x+2,y,0],[x+2,y+2,0],[x,y+2,0],[x,y,0],[x+2,y,0],[x+2,y+2,0],[x,y+2,0]]))
+
+gridlines = []
+for i in range(-40,40,2):
+  gridlines.append([-40,i],[40,i])
+  gridlines.append([i,-40],[i,40])
 
 origin = 0
 while True:
@@ -80,4 +81,5 @@ while True:
   
 
 turtle.done()
+
 

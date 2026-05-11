@@ -8,7 +8,7 @@ def scale(y):
   return y
   
 screen = turtle.Screen()
-screen.setup(600, 600)
+screen.setup(750, 600)
 screen.bgcolor("black")
 screen.tracer(0)
 
@@ -16,14 +16,13 @@ t = turtle.Turtle()
 t.hideturtle()
 t.color("white")
 CENTER = 0
-SIZE = 40
+YHORIZON = -300
 
 
 #Rotation Logic
 def rotate(x, y, z, angle):
-    # Rotate Y
-    nx = x * math.cos(0) - z * math.sin(0)
-    nz = x * math.sin(0) + z * math.cos(0)
+    nx = x
+    nz = z
     # Rotate X
     ny = y * math.cos(angle*0.6) - nz * math.sin(angle*0.6)
     nz_old = nz  # ← save it first
@@ -35,29 +34,50 @@ class Box:
     self.basePoints = basePoints
     self.edges = [[0,1],[1,2],[2,3],[3,0]]
 
+
+  def update(self,origin):
+    self.dist = abs(self.basePoints[0][0]-origin)
+    self.height = -0.5*math.sin(self.dist/10)
+    if self.height>0:
+      self.basePoints[4][2] = self.basePoints[0][2]+self.height
+      self.basePoints[5][2] = self.basePoints[1][2]+self.height
+      self.basePoints[6][2] = self.basePoints[2][2]+self.height
+      self.basePoints[7][2] = self.basePoints[3][2]+self.height
+      self.edges = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]]
+    else:
+      self.edges = [[0,1],[1,2],[2,3],[3,0]]
+      
+      
   def draw(self,angle):
     projected = []
 
     for p in self.basePoints:
         nx, ny, nz = rotate(p[0], p[1], p[2], angle)
-        dist = 6 # Distance from camera
-        factor = 180 / (nz + dist)
+        dist = 3# Distance from camera
+        factor = 100 / (nz + dist)
         projected.append((nx * factor, ny * factor))
 
     for edge in self.edges:
         p1, p2 = projected[edge[0]], projected[edge[1]]
-        t.penup(); t.goto(p1[0], p1[1])
-        t.pendown(); t.goto(p2[0], p2[1])
+        t.penup(); t.goto(p1[0], p1[1]+YHORIZON)
+        t.pendown(); t.goto(p2[0], p2[1]+YHORIZON)
 
+boxes = []
+for y in range(0,81,2):
+  for x in range(-40,41,2):
+    boxes.append(Box([[x,y,0],[x+2,y,0],[x+2,y+2,0],[x,y+2,0],[x,y,0],[x+2,y,0],[x+2,y+2,0],[x,y+2,0]]))
 
-b = Box([[0,0,0],[1,0,0],[1,-1,0],[0,-1,0]])
-angle=0
+origin = 0
 while True:
+  origin +=1
   t.clear()
-  angle+=1
-  b.draw(angle)
+  angle=0.2
+  for b in boxes:
+    b.draw(angle)
   screen.update()
-  time.sleep(0.1)
+
+
+  
 
 turtle.done()
 

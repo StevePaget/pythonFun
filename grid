@@ -14,34 +14,50 @@ screen.tracer(0)
 
 t = turtle.Turtle()
 t.hideturtle()
-
+t.color("white")
 CENTER = 0
 SIZE = 40
 
+
+#Rotation Logic
+def rotate(x, y, z, angle):
+    # Rotate Y
+    nx = x * math.cos(0) - z * math.sin(0)
+    nz = x * math.sin(0) + z * math.cos(0)
+    # Rotate X
+    ny = y * math.cos(angle*0.6) - nz * math.sin(angle*0.6)
+    nz_old = nz  # ← save it first
+    nz = y * math.sin(angle*0.6) + nz_old * math.cos(angle*0.6)
+    return nx, ny, nz
+
 class Box:
-  def __init__(self,x,y):
-    self.x = x
-    self.y = y
-    
-  def getBase(self):
-    self.p1 = [(self.x*SIZE)*scale(self.y), self.y*SIZE]
-    self.p2 = [(self.x*SIZE+SIZE)*scale(self.y), self.y*SIZE]
-    self.p3 = [(self.x*SIZE)*scale(self.y+SIZE), self.y*SIZE+SIZE]
-    self.p4 = [(self.x*SIZE+SIZE)*scale(self.y+SIZE), self.y*SIZE+SIZE]
+  def __init__(self,basePoints):
+    self.basePoints = basePoints
+    self.edges = [[0,1],[1,2],[2,3],[3,0]]
 
-    
-  def draw(self):
-    self.getBase()
-    t.penup()
-    t.goto(self.p1)
-    t.pendown()
-    t.color("white")
-    t.goto(self.p2)
-    t.goto(self.p4)
-    t.goto(self.p3)
+  def draw(self,angle):
+    projected = []
 
-      
-b1 = Box(0,0)
-b1.draw()
+    for p in self.basePoints:
+        nx, ny, nz = rotate(p[0], p[1], p[2], angle)
+        dist = 6 # Distance from camera
+        factor = 180 / (nz + dist)
+        projected.append((nx * factor, ny * factor))
+
+    for edge in self.edges:
+        p1, p2 = projected[edge[0]], projected[edge[1]]
+        t.penup(); t.goto(p1[0], p1[1])
+        t.pendown(); t.goto(p2[0], p2[1])
+
+
+b = Box([[0,0,0],[1,0,0],[1,-1,0],[0,-1,0]])
+angle=0
+while True:
+  t.clear()
+  angle+=1
+  b.draw(angle)
+  screen.update()
+  time.sleep(0.1)
 
 turtle.done()
+

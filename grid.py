@@ -29,6 +29,12 @@ def rotate(x, y, z, angle):
     nz = y * math.sin(angle*0.6) + nz_old * math.cos(angle*0.6)
     return nx, ny, nz
 
+def project(point):
+    nx, ny, nz = rotate(point[0], point[1], point[2], angle)
+    dist = 3# Distance from camera
+    factor = 100 / (nz + dist)
+    return (nx * factor, ny * factor-300)
+
 class Box:
   def __init__(self,basePoints):
     self.basePoints = basePoints
@@ -49,32 +55,29 @@ class Box:
       
       
   def draw(self,angle):
-    projected = []
-
-    for p in self.basePoints:
-        nx, ny, nz = rotate(p[0], p[1], p[2], angle)
-        dist = 3# Distance from camera
-        factor = 100 / (nz + dist)
-        projected.append((nx * factor, ny * factor))
-
     for edge in self.edges:
-        p1, p2 = projected[edge[0]], projected[edge[1]]
+        p1, p2 = project(edge[0]), project(edge[1])
         t.penup(); t.goto(p1[0], p1[1]+YHORIZON)
         t.pendown(); t.goto(p2[0], p2[1]+YHORIZON)
 
 
-gridlines = []
-for i in range(-40,40,2):
-  gridlines.append([-40,i],[40,i])
-  gridlines.append([i,-40],[i,40])
+def drawGridlines(gridlines):
+   for line in gridlines:
+      p1, p2 = project(line[0]), project(line[1])
+      t.penup(); t.goto(p1)
+      t.pendown(); t.goto(p2)
 
-origin = 0
+gridlines = []
+boxes = []
+for i in range(-40,40,2):
+  gridlines.append(([-40,i+40,0],[40,i+40,0]))
+  gridlines.append(([i,0,0],[i,80,0]))
+
+
+angle = 0.2
 while True:
-  origin +=1
   t.clear()
-  angle=0.2
-  for b in boxes:
-    b.draw(angle)
+  drawGridlines(gridlines)
   screen.update()
 
 
